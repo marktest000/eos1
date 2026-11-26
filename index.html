@@ -134,6 +134,11 @@ kbd{border:1px solid #b8bfcc;border-bottom-width:3px;border-radius:5px;padding:0
   .choices,.mcq,.tx,.actions,.fb,.kwkey,.kws2,.toks{margin-left:0}
   .tx{width:100%}
 }
+
+.rcode{display:block;width:calc(100% + 8px);margin:4px 0 0 -8px;font:inherit;font-size:21px;font-weight:800;color:var(--navy);border:2px solid transparent;border-radius:8px;padding:2px 6px;background:transparent}
+.rcode.empty{border:2px dashed var(--accent);background:#f1f5fd;font-weight:600;font-size:17px}
+.rcode:focus{outline:none;border-color:var(--accent)}
+.rtop>div:first-child{flex:1;min-width:0}
 </style>
 </head>
 <body>
@@ -264,7 +269,7 @@ EC.forEach((e,i) => ITEMS.push({id:`ec-${i+1}`, sec:"lang", n:i+6, type:"ec", e,
 
 /* ================= STATE ================= */
 const SKEY = "eos-set2-reading-v1";
-let S = {name:"", cls:"", start:null, end:null, ans:{}};
+let S = {code:"", start:null, end:null, ans:{}};
 const save = () => { try { localStorage.setItem(SKEY, JSON.stringify(S)); } catch(e){} };
 const load = () => { try { const v = JSON.parse(localStorage.getItem(SKEY)); if (v && v.ans) return v; } catch(e){} return null; };
 const norm = s => (s||"").toLowerCase().replace(/[’‘`]/g,"'").replace(/[.,!?;:"“”()]/g," ").replace(/\s+/g," ").trim();
@@ -339,9 +344,7 @@ function build() {
   <section class="page" id="pg-start"><div class="startcard">
     <h1>Practice Set 2</h1><div class="sub">Reading Focus · Units 1–4 · 32 marks</div>
     <ul class="parts">${SECTIONS.map(s=>`<li><b>${s.long}</b><span>${s.max} marks</span></li>`).join("")}</ul>
-    <p class="note">Answer each question and press <b>Check</b>. You get <b>one try</b> per question, so think first! After checking, you will see the answer and where it is in the text. At the end you will get a report to screenshot and send to your teacher on Google Chat.</p>
-    <label>Your name<input id="nm" type="text" autocomplete="off" placeholder="First name and surname"></label>
-    <label>Class<input id="cl" type="text" autocomplete="off" placeholder="e.g. 7B4"></label>
+    <p class="note">Answer each question and press <b>Check</b>. You get <b>one try</b> per question, so think first! After checking, you will see the answer and where it is in the text. At the end you will get a report: add your student code, then screenshot it and send it to your teacher on Google Chat.</p>
     <button class="btn big" id="go">Start</button>
     <div id="resume"></div>
   </div></section>
@@ -424,7 +427,7 @@ function updateScores() {
 }
 
 function show(p) {
-  if (p!=="start" && !S.name) p = "start";
+  if (p!=="start" && !S.start) p = "start";
   page = p;
   document.querySelectorAll(".page").forEach(x => x.classList.toggle("active", x.id==="pg-"+p));
   document.querySelectorAll(".steps button").forEach(b => b.classList.toggle("active", b.dataset.nav===p));
@@ -458,7 +461,7 @@ function renderReport() {
   const grid = SECTIONS.map(s => `<div class="rg"><div class="rgl">${s.name}</div><div class="rgc">${ITEMS.filter(i=>i.sec===s.id).map(i=>{const a=S.ans[i.id]; return `<span class="dot ${a?(a.ok?"ok":"no"):"na"}">${i.n}</span>`;}).join("")}</div></div>`).join("");
   $("#pg-report").innerHTML = `
    <div class="rcard" id="rcard">
-     <div class="rtop"><div><div class="rtitle">Practice Set 2 · Reading Focus</div><div class="rname">${esc(S.name)}${S.cls?` · ${esc(S.cls)}`:""}</div></div><div class="rdate">${when}</div></div>
+     <div class="rtop"><div><div class="rtitle">Practice Set 2 · Reading Focus</div><input class="rcode${S.code?"":" empty"}" id="code" type="text" autocomplete="off" maxlength="30" placeholder="Type your student code" value="${esc(S.code||"")}"></div><div class="rdate">${when}</div></div>
      <div class="rscore ${band}"><div class="big">${R.got}<span>/${R.max}</span></div><div class="pct">${R.pct}%</div></div>
      ${R.secs.map(s=>`<div class="rbar"><div class="rbl">${SHORT[s.id]}</div><div class="rbt"><div class="rbf" style="width:${s.got/s.max*100}%"></div></div><div class="rbn">${s.got}/${s.max}</div></div>`).join("")}
      <div class="rgrid">${grid}</div>
@@ -468,13 +471,17 @@ function renderReport() {
    </div>
    <div class="rbtns">
      ${R.done<ITEMS.length?`<p class="warn">You have ${ITEMS.length-R.done} question(s) not answered yet. You can go back and finish them, or send this report now.</p>`:""}
-     <p class="howto"><b>Screenshot the card above</b> and paste it into Google Chat for your teacher.<br>Windows: <kbd>Win</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd> · Mac: <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>4</kbd> · Chromebook: <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Show windows</kbd></p>
+     <p class="howto"><b>1.</b> Type your student code at the top of the card. <b>2. Screenshot the card</b> and paste it into Google Chat for your teacher.<br>Windows: <kbd>Win</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd> · Mac: <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>4</kbd> · Chromebook: <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Show windows</kbd></p>
      <button class="btn" id="copy">Copy text summary</button>
      <button class="btn ghost" id="again">Start again</button>
      <span id="copied"></span>
    </div>`;
+  const ci = $("#code");
+  ci.oninput = () => { S.code = ci.value.trim(); ci.classList.toggle("empty", !S.code); save(); };
+  ci.onkeydown = e => { if (e.key==="Enter") ci.blur(); };
+  if (!S.code) setTimeout(()=>ci.focus(), 50);
   $("#copy").onclick = () => {
-    const t = [`Practice Set 2 – Reading Focus`, `Name: ${S.name}${S.cls?` (${S.cls})`:""}`, `Score: ${R.got}/${R.max} (${R.pct}%)`,
+    const t = [`Practice Set 2 – Reading Focus`, `Student code: ${S.code||"(not entered)"}`, `Score: ${R.got}/${R.max} (${R.pct}%)`,
       ...R.secs.map(s=>`${SHORT[s.id]}: ${s.got}/${s.max}`), `Answered: ${R.done}/${ITEMS.length} · Time: ${R.mins} min · ${when}`].join("\n");
     const done = () => { $("#copied").textContent = "Copied! Paste it into Google Chat."; };
     if (navigator.clipboard?.writeText) navigator.clipboard.writeText(t).then(done, () => fallbackCopy(t, done)); else fallbackCopy(t, done);
@@ -500,13 +507,10 @@ document.addEventListener("input", e => { const el = e.target.closest(".item"); 
 document.addEventListener("keydown", e => {
   if (e.key==="Enter" && e.target.matches(".tx")) { const el = e.target.closest(".item"); const b = el.querySelector(".check"); if (!b.disabled) b.click(); }
 });
-$("#go").onclick = () => {
-  const n = $("#nm").value.trim(); if (!n) { $("#nm").focus(); $("#nm").classList.add("need"); return; }
-  S = {name:n, cls:$("#cl").value.trim(), start:Date.now(), end:null, ans:{}}; save(); show("t1");
-};
+$("#go").onclick = () => { S = {code:"", start:Date.now(), end:null, ans:{}}; save(); show("t1"); };
 const prev = load();
-if (prev && prev.name && Object.keys(prev.ans).length) {
-  $("#resume").innerHTML = `<button class="btn ghost" id="res">Continue as ${esc(prev.name)} (${Object.keys(prev.ans).length} answered)</button>`;
+if (prev && prev.start && Object.keys(prev.ans).length) {
+  $("#resume").innerHTML = `<button class="btn ghost" id="res">Continue where I stopped (${Object.keys(prev.ans).length} answered)</button>`;
   $("#res").onclick = () => { S = prev; ITEMS.forEach(it => { const r = S.ans[it.id]; if (r) lockItem(it, document.getElementById(it.id), r); }); updateScores(); show("t1"); };
 }
 updateScores(); show("start");
