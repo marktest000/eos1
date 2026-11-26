@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Practice Set 2 – Reading Focus (Student)</title>
+<style>:root{--ink:#1d2433;--muted:#5b6474;--navy:#1f3864;--accent:#2f5aa8;--green:#1a7f37;--greenbg:#e3f4e8;--red:#c0392b;--redbg:#fdecea;--hl:#ffe066;--paper:#f4f2ed;--line:#d9dde5}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);font-size:17px}
+header{position:sticky;top:0;z-index:10;background:var(--navy);color:#fff;display:flex;align-items:center;gap:14px;padding:10px 20px;flex-wrap:wrap}
+header .brand{font-weight:700;font-size:17px}
+.steps{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+.steps button{background:transparent;border:1px solid rgba(255,255,255,.4);color:#fff;font:inherit;font-size:14px;padding:5px 12px;border-radius:16px;cursor:pointer}
+.steps button.active{background:#fff;color:var(--navy);font-weight:700}
+.steps button.complete::after{content:" ✓"}
+#app{max-width:1500px;margin:0 auto;padding:18px 20px 60px}
+.page{display:none}.page.active{display:block}
+.phead{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap}
+.phead h2{margin:0;color:var(--navy);font-size:26px}
+.pscore{font-size:15px;color:var(--muted);background:#fff;border:1px solid var(--line);border-radius:14px;padding:3px 12px}
+.instr{color:var(--muted);font-style:italic;margin:6px 0 14px}
+/* start */
+.startcard{max-width:620px;margin:20px auto;background:#fff;border:1px solid var(--line);border-radius:16px;padding:28px 32px}
+.startcard h1{margin:0;color:var(--navy);font-size:34px}
+.startcard .sub{color:var(--muted);margin-bottom:16px}
+.parts{list-style:none;padding:0;margin:0 0 14px}
+.parts li{display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding:7px 0}
+.parts li span{color:var(--muted)}
+.note{background:#f1f5fd;border-radius:10px;padding:10px 14px;font-size:15.5px;line-height:1.45}
+.startcard label{display:block;font-weight:600;margin:12px 0 0}
+.startcard input{display:block;width:100%;margin-top:5px;font:inherit;padding:10px 12px;border:2px solid var(--line);border-radius:8px}
+.startcard input.need{border-color:var(--red)}
+.btn{font:inherit;font-weight:600;padding:10px 20px;border-radius:9px;border:2px solid var(--accent);background:var(--accent);color:#fff;cursor:pointer}
+.btn.ghost{background:#fff;color:var(--accent)}
+.btn.big{width:100%;margin-top:18px;font-size:19px;padding:13px}
+#resume{margin-top:10px;text-align:center}
+/* reading layout */
+.rwrap{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:20px;align-items:start}
+.ptext{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 22px;font-size:17px;line-height:1.55}
+.ptext h3{margin:0 0 8px;color:var(--navy)}
+.ptext p{margin:0 0 10px}
+.pn{font-weight:700;color:var(--navy);margin-right:6px}
+.t1grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pbox{border:1px solid var(--line);border-radius:10px;padding:9px 13px;font-size:16px;line-height:1.45;background:#fcfcfd}
+.pbox h4{margin:0 0 4px;color:var(--navy)}
+.pbox p{margin:0}
+.ev{border-radius:3px;transition:background .3s}
+.ev.on{background:var(--hl);box-shadow:0 0 0 2px var(--hl)}
+.tgap .gn{display:inline-block;min-width:80px;border-bottom:2px solid var(--ink);text-align:center;font-weight:700;color:var(--navy)}
+.tgap .gn::before{content:"( "}.tgap .gn::after{content:" )"}
+.tgap .gf{display:none;background:var(--greenbg);color:var(--green);font-weight:600;border-radius:4px;padding:0 4px}
+.tgap.filled .gn{min-width:0;border:none;font-size:.8em;background:var(--green);color:#fff;border-radius:4px;padding:0 5px;margin-right:4px}
+.tgap.filled .gn::before,.tgap.filled .gn::after{content:""}
+.tgap.filled .gf{display:inline}
+.tgap.filled .gf.on{background:var(--hl);color:var(--ink)}
+.qcol{display:flex;flex-direction:column;gap:12px}
+.optbox{background:#fff;border:2px solid var(--ink);border-radius:10px;padding:8px 12px;font-size:15px;line-height:1.4}
+.optbox b{color:var(--navy);margin-right:4px}
+.langwrap{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+/* items */
+.item{background:#fff;border:2px solid var(--line);border-radius:12px;padding:12px 16px}
+.item.right{border-color:#8cc79c}.item.wrong{border-color:#e7a29a}
+.ihead{display:flex;gap:10px;align-items:flex-start}
+.inum{flex:0 0 32px;height:32px;border-radius:50%;background:var(--navy);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:16px}
+.iq{flex:1;line-height:1.4;padding-top:4px}
+.choices{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 0 42px}
+.ch{font:inherit;font-weight:700;width:46px;height:42px;border-radius:8px;border:2px solid var(--line);background:#f6f7fa;cursor:pointer;color:var(--ink)}
+.mcq{display:flex;flex-direction:column;gap:6px;margin:10px 0 0 42px}
+.op{font:inherit;text-align:left;padding:8px 12px;border-radius:8px;border:2px solid var(--line);background:#f6f7fa;cursor:pointer;color:var(--ink);font-size:16px}
+.ch.sel,.op.sel,.tok.sel{border-color:var(--accent);background:#e6eefc}
+.done .ch.sel,.done .op.sel,.done .tok.sel{border-color:var(--red);background:var(--redbg)}
+.done .ch.key,.done .op.key,.done .tok.key{border-color:var(--green);background:var(--greenbg);color:var(--green)}
+.done .ch,.done .op,.done .tok{cursor:default}
+.done .op:not(.key):not(.sel){opacity:.5}
+.tx{font:inherit;padding:8px 11px;border:2px solid var(--line);border-radius:8px;margin:10px 0 0 42px;width:calc(100% - 42px)}
+.tx.kw{margin:0;width:200px;display:inline-block}
+.done .tx{background:#f6f7fa;color:var(--ink)}
+.kwkey{display:inline-block;margin:8px 0 0 42px;font-weight:800;letter-spacing:1px;background:var(--navy);color:#fff;padding:1px 10px;border-radius:5px;font-size:15px}
+.kws2{margin:8px 0 0 42px;line-height:2.2}
+.toks{margin:10px 0 0 42px;line-height:2.3}
+.tok{font:inherit;padding:2px 7px;border-radius:6px;border:2px solid transparent;background:#f1f3f7;cursor:pointer;color:var(--ink)}
+.actions{margin:10px 0 0 42px}
+.check{font:inherit;font-weight:600;padding:7px 20px;border-radius:8px;border:none;background:var(--accent);color:#fff;cursor:pointer}
+.check:disabled{background:#b9c3d6;cursor:default}
+.done .actions{display:none}
+.fb{margin-left:42px}
+.fb:empty{display:none}
+.done .fb{margin-top:10px;border-radius:8px;padding:9px 12px}
+.right .fb{background:var(--greenbg)}.wrong .fb{background:var(--redbg)}
+.verdict{font-weight:800}
+.right .verdict{color:var(--green)}.wrong .verdict{color:var(--red)}
+.fbline{margin-top:3px}
+.fbnote{font-size:14.5px;color:var(--muted);margin-top:3px}
+.good{color:var(--green)}.bad{color:var(--red);text-decoration:line-through}
+.showtext{margin-top:6px;font:inherit;font-size:14px;font-weight:700;padding:4px 10px;border-radius:6px;border:1px solid #c7a400;background:#fff6c7;color:#7a6200;cursor:pointer}
+.pnav{display:flex;justify-content:space-between;margin-top:22px}
+/* report */
+.rcard{width:440px;max-width:100%;margin:10px auto;background:#fff;border:2px solid var(--navy);border-radius:16px;padding:18px 20px}
+.rtop{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.rtitle{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.rname{font-size:21px;font-weight:800;color:var(--navy);margin-top:2px}
+.rdate{font-size:12.5px;color:var(--muted);text-align:right;white-space:nowrap}
+.rscore{display:flex;align-items:center;justify-content:space-between;border-radius:12px;padding:10px 16px;margin:12px 0}
+.rscore .big{font-size:44px;font-weight:800;line-height:1}.rscore .big span{font-size:22px;opacity:.7}
+.rscore .pct{font-size:30px;font-weight:800}
+.b4{background:#dff3e4;color:#156b2e}.b3{background:#e6eefc;color:#1f4a99}.b2{background:#fff3cf;color:#8a6200}.b1{background:#fde4e1;color:#a2291c}
+.rbar{display:grid;grid-template-columns:140px 1fr 40px;align-items:center;gap:8px;font-size:14px;margin:5px 0}
+.rbt{height:10px;background:#eceff4;border-radius:5px;overflow:hidden}
+.rbf{height:100%;background:var(--accent)}
+.rbn{text-align:right;font-weight:700}
+.rgrid{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+.rg{display:flex;align-items:center;gap:8px;margin:4px 0}
+.rgl{width:70px;font-size:13px;font-weight:700;color:var(--muted)}
+.rgc{display:flex;gap:4px;flex-wrap:wrap}
+.dot{display:inline-flex;width:24px;height:24px;border-radius:6px;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+.dot.ok{background:#cfeed8;color:#156b2e}.dot.no{background:#f8d3cd;color:#a2291c}.dot.na{background:#eceff4;color:#8a93a3}
+.rleg{display:flex;gap:6px;align-items:center;font-size:12px;color:var(--muted);margin-top:8px}
+.rleg .dot{width:18px;height:18px;font-size:11px;margin-left:6px}
+.rtip{margin-top:12px;background:#f1f5fd;border-radius:8px;padding:8px 11px;font-size:14px;line-height:1.4}
+.rfoot{margin-top:10px;font-size:12.5px;color:var(--muted);text-align:center}
+.rbtns{max-width:560px;margin:16px auto;text-align:center}
+.rbtns .btn{margin:4px}
+.howto{font-size:15px;line-height:1.7}
+.warn{background:#fff3cf;border-radius:8px;padding:8px 12px;font-size:15px}
+kbd{border:1px solid #b8bfcc;border-bottom-width:3px;border-radius:5px;padding:0 6px;background:#fff;font-family:inherit;font-size:13px}
+#copied{display:block;color:var(--green);font-weight:600;margin-top:6px}
+/* mobile */
+@media (max-width:900px){
+  .rwrap,.langwrap{grid-template-columns:1fr}
+  .ptext{position:static;max-height:none}
+  .t1grid{grid-template-columns:1fr}
+  .optbox{position:static}
+  header .brand{font-size:15px}
+  .choices,.mcq,.tx,.actions,.fb,.kwkey,.kws2,.toks{margin-left:0}
+  .tx{width:100%}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">Practice Set 2 · Reading Focus</div>
+  <nav class="steps">
+    <button data-nav="t1">Task 1</button><button data-nav="t2">Task 2</button><button data-nav="t3">Task 3</button><button data-nav="lang">Language</button><button data-nav="report">My report</button>
+  </nav>
+</header>
+<div id="app"></div>
+<script>
+/* ================= CONTENT ================= */
+
+/* ---- Task 1: multiple matching ---- */
+const T1_TEXT = `
+<h3>Where I Live</h3>
+<div class="t1grid">
+ <div class="pbox"><h4>A · Linh</h4><p>I live in the old quarter of a busy city. Our street became a car-free zone last year, and <span class="ev q1">at first my dad complained</span> because he had to park ten minutes away. <span class="ev q1">Now even he admits it's much quieter.</span> At weekends, street musicians play and families sit outside until late. The only problem is that <span class="ev q4">the café owners have put tables everywhere, so it can be hard to walk through with a bicycle</span>.</p></div>
+ <div class="pbox"><h4>B · Omar</h4><p>My family moved to a new housing estate on the edge of town six months ago. The flats are modern and bright, and raised walkways connect the buildings to a small park. However, <span class="ev q7">there is nothing for teenagers to do here, and the nearest cinema is two bus rides away</span>. <span class="ev q2">I wish the planners had asked young people what they needed before they built it.</span></p></div>
+ <div class="pbox"><h4>C · Sofia</h4><p>I've lived in the same village all my life. Everyone knows everyone, which is lovely when you need help but annoying when you want privacy! Last spring, <span class="ev q3">when a storm damaged the school roof, the whole village spent a weekend repairing it</span>. That's real community spirit. <span class="ev q6">I'm planning to study in the capital, but I'm sure I'll come back one day.</span></p></div>
+ <div class="pbox"><h4>D · Kenji</h4><p>Our apartment is in the centre of a huge city, right above a shopping street. <span class="ev q5">Bright digital billboards light up my bedroom at night</span>, advertising everything from trainers to fizzy drinks. <span class="ev q5">My mum bought thick curtains, which helped.</span> Living here means <span class="ev q8">I can walk to school, the library and three different sports centres, so I'd never swap it for the countryside, even if it is noisy</span>.</p></div>
+</div>`;
+const T1 = {
+ 1:{q:"Which person says a change in the area was unpopular with a family member at first?",a:"A – Linh",acc:"Her dad complained, but now “even he admits it's much quieter”."},
+ 2:{q:"Which person thinks young people's opinions were ignored?",a:"B – Omar",acc:"“I wish the planners had asked young people…”"},
+ 3:{q:"Which person describes neighbours working together to solve a problem?",a:"C – Sofia",acc:"The whole village repaired the school roof."},
+ 4:{q:"Which person mentions a disadvantage caused by businesses using public space?",a:"A – Linh",acc:"Café tables on the street. Not D: billboards are advertising, not use of public space."},
+ 5:{q:"Which person's family has found a way to deal with a problem caused by advertising?",a:"D – Kenji",acc:"Billboards light up the bedroom → thick curtains."},
+ 6:{q:"Which person expects to leave the area but return in the future?",a:"C – Sofia",acc:"Study in the capital → “I'll come back one day”."},
+ 7:{q:"Which person lives a long way from places for entertainment?",a:"B – Omar",acc:"Nearest cinema is two bus rides away. Not D: Kenji has sports centres nearby."},
+ 8:{q:"Which person values being close to useful places more than peace and quiet?",a:"D – Kenji",acc:"Would never swap it for the countryside “even if it is noisy”."}
+};
+
+/* ---- Task 2: gapped text ---- */
+const G = (n, s) => `<span class="tgap" data-g="${n}"><span class="gn">${n}</span><span class="gf">${s}</span></span>`;
+const T2_OPTS = {
+ A:"Its design was inspired by an unlikely creature: the termite.",
+ B:"Curious, he examined them under a microscope.",
+ C:"Some designs are too expensive to produce, while others are difficult to repair.",
+ D:"Because of this, the trains were never allowed to travel at full speed again.",
+ E:"Instead of starting from nothing, many of them now look closely at plants and animals for ideas.",
+ F:"This noise disturbed people living nearby, and it was clear that a new design was needed.",
+ G:"It also involves understanding the processes that make living things so efficient."
+};
+const T2_TEXT = `
+<h3>Designs Borrowed from Nature</h3>
+<p><span class="pn">[1]</span><span class="ev q1">Engineers and architects</span> often face problems that nature solved millions of years ago. ${G(1,T2_OPTS.E)} <span class="ev q1">This approach</span> is called biomimicry, and it has produced some of the cleverest inventions of the last hundred years.</p>
+<p><span class="pn">[2]</span>One famous example began with a walk in the countryside. In the 1940s, a Swiss engineer called George de Mestral returned home and noticed <span class="ev q2">tiny seeds stuck to his dog's fur</span>. ${G(2,T2_OPTS.B)} <span class="ev q2">He realised that each seed was covered in hundreds of tiny hooks</span> which caught on anything with loops. After years of experiments, he produced a fastener made of two strips: one with hooks and one with loops. Today we know it as Velcro.</p>
+<p><span class="pn">[3]</span>Nature has also helped to make trains quieter. Japan's high-speed trains used to create <span class="ev q3">a loud boom every time they came out of a tunnel</span>. ${G(3,T2_OPTS.F)} <span class="ev q3">The engineer in charge of the problem</span> was a keen birdwatcher, and he thought about the kingfisher, a bird which dives into water without making a splash. The train's new front was designed in the same long, narrow shape as the bird's beak. As a result, <span class="ev qx">the trains became quieter and used less electricity</span>.</p>
+<p><span class="pn">[4]</span>Even buildings can learn from animals. In Zimbabwe, <span class="ev q4">the Eastgate Centre</span>, an office and shopping building in Harare, stays cool without traditional air conditioning. ${G(4,T2_OPTS.A)} <span class="ev q4">Termites build tall mounds of earth</span> with small tunnels inside that let warm air escape and cool air enter. The architect, Mick Pearce, used a similar system of air channels.</p>
+<p><span class="pn">[5]</span><span class="ev q5">Biomimicry is not only about copying shapes.</span> ${G(5,T2_OPTS.G)} <span class="ev q5">Scientists are studying how leaves turn sunlight into energy</span>, how spider silk can be stronger than steel of the same weight, and how some lizards can walk up walls.</p>
+<p><span class="pn">[6]</span>Of course, <span class="ev q6">not every idea works in the real world</span>. ${G(6,T2_OPTS.C)} <span class="ev q6">However</span>, as people search for ways to save energy and protect the planet, engineers are likely to keep turning to nature for answers.</p>`;
+const T2 = {
+ 1:{gap:1,o:"E",acc:"<b>them</b> = engineers and architects; <b>This approach</b> = looking at plants and animals."},
+ 2:{gap:2,o:"B",acc:"<b>them</b> = the seeds; under the microscope → <b>He realised</b> each seed had hooks."},
+ 3:{gap:3,o:"F",acc:"<b>This noise</b> = the loud boom → <b>the problem</b> in the next sentence."},
+ 4:{gap:4,o:"A",acc:"<b>Its</b> = the Eastgate Centre; termite introduced → <b>Termites build</b>…"},
+ 5:{gap:5,o:"G",acc:"<b>not only</b> copying shapes → <b>It also</b> involves processes → examples follow."},
+ 6:{gap:6,o:"C",acc:"Problems with some ideas → <b>However</b> turns to the positive."},
+ x:{extra:true,o:"D",acc:"Not needed. It contradicts the text: the new design made the trains <b>quieter and more efficient</b>; nothing says their speed was limited."}
+};
+
+/* ---- Task 3: long text ---- */
+const T3_TEXT = `
+<h3>Thirty Seconds to Sell</h3>
+<p><span class="pn">[1]</span>When our teacher announced that our class would be making a real advert for a local business, most of us imagined ourselves as famous film directors. <span class="ev q1">The reality turned out to be far more challenging – and far more interesting – than any of us expected.</span></p>
+<p><span class="pn">[2]</span>The business was Hoa's Bakery, a small family shop two streets from our school. Mrs Hoa explained that <span class="ev q2">a new supermarket had opened nearby and her sales had dropped by almost a third</span>. <span class="ev q3">“I can't compete on price,”</span> she told us honestly. <span class="ev q3">“But nobody makes bread the way we do.”</span> Our task was to create a thirty-second video that would bring customers back.</p>
+<p><span class="pn">[3]</span>We were divided into four teams, and each team had to present an idea. My team's first plan was to fill the screen with special offers: “Buy two loaves, get one free!” However, when we tested it on our classmates, <span class="ev q4">they said it looked exactly like every supermarket advert they had ever seen</span>. That was a <span class="ev q5">turning point</span>. We realised we needed to sell something the supermarket couldn't offer.</p>
+<p><span class="pn">[4]</span>Instead, we decided to tell a story. We filmed Mrs Hoa arriving at the bakery at four in the morning, switching on the lights and shaping the dough by hand. <span class="ev q6">There was no music at first, just the sound of the oven and the street slowly waking up.</span> Then, in the final five seconds, a group of children ran in to buy warm rolls, and the slogan appeared: “Baked by hand. Made with heart.”</p>
+<p><span class="pn">[5]</span>Editing was the hardest part. We had filmed nearly two hours of material, and choosing thirty seconds felt impossible. In the end, our teacher gave us some advice I still remember: “If a shot doesn't help the story, it doesn't belong in the advert, however beautiful it is.”</p>
+<p><span class="pn">[6]</span><span class="ev q7">Our advert</span> was shown on the bakery's social media page in March. Within two weeks, Mrs Hoa said that several new customers had mentioned <span class="ev q7">it</span>, and one elderly man had even asked whether she would teach him to bake. <span class="ev q8">Whether sales really recovered because of us, we will never know for certain. But I learned that the best adverts don't shout about prices.</span> They make you feel something.</p>`;
+const T3 = {
+ 1:{q:"What does the writer suggest about the project in Paragraph 1?",opts:["A. It was easier than the students had hoped.","B. It was different from what the students had imagined.","C. It made the students want to become film directors.","D. It was only interesting for some of the class."],ok:1,a:"B",acc:"“far more challenging … than any of us expected”."},
+ 2:{q:"Why had Mrs Hoa's sales fallen?",a:"A new supermarket had opened nearby.",acc:"Do not accept: “her bread was expensive” – not stated."},
+ 3:{q:"What does Mrs Hoa mean when she says “I can't compete on price”?",opts:["A. Her bread is cheaper than the supermarket's.","B. She cannot sell her bread as cheaply as the supermarket.","C. She does not want to talk about money.","D. Her prices change every day."],ok:1,a:"B",acc:"She competes on quality instead: “nobody makes bread the way we do”."},
+ 4:{q:"Why did the team decide not to use special offers?",a:"Their classmates said it looked like every supermarket advert.",acc:"Accept: it wasn't different / original enough."},
+ 5:{q:"Which phrase in Paragraph 3 means “a moment when an important change happens”?",a:"turning point"},
+ 6:{q:"Why does the writer mention that there was “no music at first”?",opts:["A. To show that the team forgot to add music.","B. To show how calm and real the early morning felt.","C. Because music was too expensive to use.","D. To make the advert shorter."],ok:1,a:"B",acc:"Only natural sounds: the oven and the street “slowly waking up”."},
+ 7:{q:"In Paragraph 6, what does “it” refer to in “several new customers had mentioned it”?",a:"the (bakery) advert",acc:"Do not accept: the bakery / social media page."},
+ 8:{q:"Which statement best describes the writer's conclusion?",opts:["A. The advert definitely saved the bakery.","B. Special offers are the best way to attract customers.","C. The writer is not sure of the advert's effect but learned something important.","D. The supermarket closed because of the advert."],ok:2,a:"C",acc:"“we will never know for certain. But I learned…”"}
+};
+
+/* ---- Part 4: language ---- */
+const KWT = [
+ ["Students filmed the advert. It was shown online in March.","BY","The advert,","students, was shown online in March.","filmed by","which was filmed by"],
+ ["Nobody helped Mrs Hoa run the bakery.","HERSELF","Mrs Hoa ran the bakery",".","by herself",""],
+ ["Workers are repairing the old bridge at the moment.","REPAIRED","The old bridge","at the moment.","is being repaired",""],
+ ["I'm sorry that I don't have time to visit the new museum.","WISH","I","time to visit the new museum.","wish I had",""],
+ ["We won't win the competition if we don't work together.","UNLESS","We won't win the competition","together.","unless we work",""]
+];
+const EC = [
+ ["Inspired by the kingfisher, ","so"," ","the train's new front is long and narrow.","A participle clause joins the main clause directly – no conjunction.","delete <i>so</i>"],
+ ["If engineers ","would copy","copied"," nature more, buildings would use less energy.","No <i>would</i> in the <i>if</i> clause.",""],
+ ["The termite mound, ","that","which"," has tiny tunnels inside, stays cool.","Non-defining relative clause (with commas): <i>which</i>, not <i>that</i>.",""],
+ ["","Despite","Although"," the supermarket is cheaper, many people prefer the bakery.","<i>Despite</i> + noun/-ing; <i>although</i> + clause.","Despite the fact that"],
+ ["The students really enjoyed ","themself","themselves"," during the project.","Plural subject → <i>themselves</i>.",""]
+];
+
+
+/* ================= MARKING KEYS ================= */
+const T1_KEY = {1:"A",2:"B",3:"C",4:"A",5:"D",6:"C",7:"B",8:"D"};
+const T3_SHORT = {
+  2:[/super\s*market/i],
+  4:[/super\s*market/i,/\bsame\b/i,/\blike (every|all|other|the other)/i,/similar/i,/not (different|original|new|special)/i,/boring/i,/\bcop(y|ied)/i,/ordinary/i,/usual/i],
+  5:[/turning\s*point/i],
+  7:[/\badvert/i,/\badvertisement/i,/\bad\b/i,/\bvideo/i,/\bcommercial/i]
+};
+const KWT_ACC = [["filmed by","which was filmed by"],["by herself"],["is being repaired"],["wish i had"],["unless we work"]];
+const EC_ACC = [["", "delete", "remove", "-", "delete so", "remove so"],["copied"],["which"],["although","though","even though","despite the fact that"],["themselves"]];
+
+/* ================= ITEMS ================= */
+const SECTIONS = [
+  {id:"t1", name:"Task 1", long:"Task 1 · Multiple matching", max:8},
+  {id:"t2", name:"Task 2", long:"Task 2 · Gapped text", max:6},
+  {id:"t3", name:"Task 3", long:"Task 3 · Long text", max:8},
+  {id:"lang", name:"Language", long:"Language · Units 1–4", max:10}
+];
+const ITEMS = [];
+for (let n=1;n<=8;n++) ITEMS.push({id:`t1-${n}`, sec:"t1", n, type:"choice", choices:["A","B","C","D"], key:T1_KEY[n], q:T1[n].q, answer:T1[n].a, note:T1[n].acc, ev:String(n)});
+for (let n=1;n<=6;n++) ITEMS.push({id:`t2-${n}`, sec:"t2", n, type:"choice", choices:Object.keys(T2_OPTS), key:T2[n].o, q:`Gap ${n}`, answer:`${T2[n].o} – ${T2_OPTS[T2[n].o]}`, note:T2[n].acc, ev:String(n), gap:n});
+for (let n=1;n<=8;n++) {
+  const d = T3[n];
+  if (d.opts) ITEMS.push({id:`t3-${n}`, sec:"t3", n, type:"mcq", opts:d.opts, key:d.opts[d.ok][0], q:d.q, answer:d.opts[d.ok], note:d.acc, ev:String(n)});
+  else ITEMS.push({id:`t3-${n}`, sec:"t3", n, type:"text", rx:T3_SHORT[n], q:d.q, answer:d.a, note:d.acc, ev:String(n)});
+}
+KWT.forEach((k,i) => ITEMS.push({id:`kw-${i+1}`, sec:"lang", n:i+1, type:"kwt", k, acc:KWT_ACC[i], answer:k[4]+(k[5]?` (also: ${k[5]})`:""), note:"Write 2–4 words, including the word given."}));
+EC.forEach((e,i) => ITEMS.push({id:`ec-${i+1}`, sec:"lang", n:i+6, type:"ec", e, acc:EC_ACC[i]}));
+
+/* ================= STATE ================= */
+const SKEY = "eos-set2-reading-v1";
+let S = {name:"", cls:"", start:null, end:null, ans:{}};
+const save = () => { try { localStorage.setItem(SKEY, JSON.stringify(S)); } catch(e){} };
+const load = () => { try { const v = JSON.parse(localStorage.getItem(SKEY)); if (v && v.ans) return v; } catch(e){} return null; };
+const norm = s => (s||"").toLowerCase().replace(/[’‘`]/g,"'").replace(/[.,!?;:"“”()]/g," ").replace(/\s+/g," ").trim();
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function mark(it, v) {
+  switch (it.type) {
+    case "choice": case "mcq": return v === it.key;
+    case "text": return it.rx.some(r => r.test(v||""));
+    case "kwt": return it.acc.includes(norm(v));
+    case "ec": {
+      if (!v || !v.tok) return false;
+      const tokOk = it.errIdx.includes(v.tok);
+      const c = norm(v.fix), err = norm(it.e[1]);
+      let fixOk = it.acc.includes(c);
+      if (!fixOk && c) fixOk = it.acc.some(a => a && new RegExp(`(^| )${a}( |$)`).test(c)) && !new RegExp(`(^| )${err}( |$)`).test(c);
+      return tokOk && fixOk;
+    }
+  }
+}
+
+/* ================= RENDER ================= */
+const $ = s => document.querySelector(s);
+const PAGES = ["start","t1","t2","t3","lang","report"];
+let page = "start";
+
+function passageFor(sec) { return sec==="t1" ? T1_TEXT : sec==="t2" ? T2_TEXT : T3_TEXT; }
+
+function itemHTML(it) {
+  let h = `<div class="item" id="${it.id}" data-id="${it.id}"><div class="ihead"><span class="inum">${it.type==="ec"||it.type==="kwt"?it.n:(it.sec==="t2"?it.n:it.n)}</span><div class="iq">`;
+  if (it.type==="choice" && it.sec==="t1") h += `${it.q}</div></div><div class="choices">${it.choices.map(c=>`<button class="ch" data-v="${c}">${c}</button>`).join("")}</div>`;
+  else if (it.type==="choice") h += `<b>${it.q}</b> – choose a sentence</div></div><div class="choices">${it.choices.map(c=>`<button class="ch" data-v="${c}">${c}</button>`).join("")}</div>`;
+  else if (it.type==="mcq") h += `${it.q}</div></div><div class="mcq">${it.opts.map(o=>`<button class="op" data-v="${o[0]}">${o}</button>`).join("")}</div>`;
+  else if (it.type==="text") h += `${it.q}</div></div><input class="tx" type="text" autocomplete="off" placeholder="Type your answer">`;
+  else if (it.type==="kwt") {
+    const k = it.k;
+    h += `${k[0]}</div></div><div class="kwkey">${k[1]}</div><div class="kws2">${k[2]} <input class="tx kw" type="text" autocomplete="off" placeholder="2–4 words"> ${k[3]}</div>`;
+  } else if (it.type==="ec") {
+    const e = it.e, toks = [];
+    const push = (txt, err) => txt.split(" ").filter(Boolean).forEach(w => toks.push({w, err}));
+    push(e[0].replace(/<[^>]+>/g,""), false); push(e[1], true); push(e[3], false);
+    it.errIdx = []; it.toks = toks;
+    h += `Tap the word that is wrong, then type the correction.</div></div><div class="toks">${toks.map((t,i)=>{ if (t.err) it.errIdx.push(String(i)); return `<button class="tok" data-i="${i}">${esc(t.w)}</button>`; }).join(" ")}</div>
+      <input class="tx fix" type="text" autocomplete="off" placeholder="Correction (leave empty if the word should be deleted)">`;
+  }
+  h += `<div class="actions"><button class="check" disabled>Check</button></div><div class="fb"></div></div>`;
+  return h;
+}
+
+function sectionHTML(sec) {
+  const S0 = SECTIONS.find(s=>s.id===sec);
+  const items = ITEMS.filter(i=>i.sec===sec);
+  const nextIdx = PAGES.indexOf(sec)+1;
+  const nextLabel = PAGES[nextIdx]==="report" ? "Finish and see my report" : `Next: ${SECTIONS.find(s=>s.id===PAGES[nextIdx]).long}`;
+  let instr = "";
+  if (sec==="t1") instr = "Read about four teenagers. For each question, choose the person A–D. You can choose a person more than once.";
+  if (sec==="t2") instr = "Six sentences have been removed from the article. Choose the sentence A–G that fits each gap. There is one extra sentence you do not need.";
+  if (sec==="t3") instr = "Read the article and answer the questions.";
+  if (sec==="lang") instr = "Questions 1–5: complete the second sentence using the word given (2–4 words). Questions 6–10: find and correct the mistake.";
+  const opts = sec==="t2" ? `<div class="optbox">${Object.entries(T2_OPTS).map(([k,v])=>`<div><b>${k}</b> ${v}</div>`).join("")}</div>` : "";
+  const qs = items.map(itemHTML).join("");
+  const body = sec==="lang"
+    ? `<div class="langwrap">${qs}</div>`
+    : `<div class="rwrap"><div class="ptext" id="p-${sec}">${passageFor(sec)}</div><div class="qcol">${opts}${qs}</div></div>`;
+  return `<section class="page" id="pg-${sec}"><div class="phead"><h2>${S0.long}</h2><div class="pscore" id="ps-${sec}"></div></div>
+    <p class="instr">${instr}</p>${body}
+    <div class="pnav"><button class="btn ghost" data-nav="${PAGES[nextIdx-2]}">&#8592; Back</button><button class="btn" data-nav="${PAGES[nextIdx]}">${nextLabel} &#8594;</button></div></section>`;
+}
+
+function build() {
+  $("#app").innerHTML = `
+  <section class="page" id="pg-start"><div class="startcard">
+    <h1>Practice Set 2</h1><div class="sub">Reading Focus · Units 1–4 · 32 marks</div>
+    <ul class="parts">${SECTIONS.map(s=>`<li><b>${s.long}</b><span>${s.max} marks</span></li>`).join("")}</ul>
+    <p class="note">Answer each question and press <b>Check</b>. You get <b>one try</b> per question, so think first! After checking, you will see the answer and where it is in the text. At the end you will get a report to screenshot and send to your teacher on Google Chat.</p>
+    <label>Your name<input id="nm" type="text" autocomplete="off" placeholder="First name and surname"></label>
+    <label>Class<input id="cl" type="text" autocomplete="off" placeholder="e.g. 7B4"></label>
+    <button class="btn big" id="go">Start</button>
+    <div id="resume"></div>
+  </div></section>
+  ${["t1","t2","t3","lang"].map(sectionHTML).join("")}
+  <section class="page" id="pg-report"></section>`;
+}
+
+/* ================= INTERACTION ================= */
+function getVal(it, el) {
+  if (it.type==="choice") return el.querySelector(".ch.sel")?.dataset.v;
+  if (it.type==="mcq") return el.querySelector(".op.sel")?.dataset.v;
+  if (it.type==="text"||it.type==="kwt") return el.querySelector(".tx").value.trim();
+  if (it.type==="ec") return {tok: el.querySelector(".tok.sel")?.dataset.i, fix: el.querySelector(".fix").value.trim()};
+}
+function ready(it, el) {
+  const v = getVal(it, el);
+  const ok = it.type==="ec" ? !!(v && v.tok) : !!v;
+  el.querySelector(".check").disabled = !ok;
+}
+function feedbackHTML(it, ok, v) {
+  let h = `<div class="verdict">${ok?"✓ Correct":"✗ Not quite"}</div>`;
+  if (it.type==="ec") {
+    const e = it.e, plain = s => s.replace(/<[^>]+>/g,"");
+    const fixed = (plain(e[0]) + (e[2].trim()?e[2]:"") + plain(e[3])).replace(/\s+/g," ").replace(/^\s*(\w)/,(m,c)=>c.toUpperCase());
+    const tokOk = v && it.errIdx.includes(v.tok);
+    h += `<div class="fbline">The mistake is <b class="bad">${e[1]}</b> → ${e[2].trim()?`<b class="good">${e[2]}</b>`:"<b class='good'>delete it</b>"}${!ok && !tokOk ? " (you chose a different word)" : ""}</div>
+          <div class="fbline">Correct sentence: <i>${fixed}</i></div><div class="fbnote">${e[4]}${e[5]?` · Also accepted: ${e[5]}`:""}</div>`;
+  } else {
+    h += `<div class="fbline">Answer: <b class="good">${it.answer}</b></div>${it.note?`<div class="fbnote">${it.note}</div>`:""}`;
+    if (it.sec!=="lang") h += `<button class="showtext">Show in text</button>`;
+  }
+  return h;
+}
+function lockItem(it, el, rec) {
+  el.classList.add("done", rec.ok ? "right" : "wrong");
+  el.querySelectorAll("button:not(.showtext), input").forEach(b => b.disabled = true);
+  const v = rec.v;
+  if (it.type==="choice") { el.querySelectorAll(".ch").forEach(b => { if (b.dataset.v===v) b.classList.add("sel"); if (b.dataset.v===it.key) b.classList.add("key"); }); }
+  if (it.type==="mcq") { el.querySelectorAll(".op").forEach(b => { if (b.dataset.v===v) b.classList.add("sel"); if (b.dataset.v===it.key) b.classList.add("key"); }); }
+  if (it.type==="text"||it.type==="kwt") el.querySelector(".tx").value = v||"";
+  if (it.type==="ec") {
+    el.querySelectorAll(".tok").forEach(b => { if (b.dataset.i===v?.tok) b.classList.add("sel"); if (it.errIdx.includes(b.dataset.i)) b.classList.add("key"); });
+    el.querySelector(".fix").value = v?.fix||"";
+  }
+  el.querySelector(".fb").innerHTML = feedbackHTML(it, rec.ok, v);
+  if (it.gap) document.querySelectorAll(`.tgap[data-g="${it.gap}"]`).forEach(g => g.classList.add("filled"));
+}
+function highlight(it, scroll) {
+  const p = document.getElementById("p-"+it.sec); if (!p) return;
+  p.querySelectorAll(".ev.on").forEach(e=>e.classList.remove("on"));
+  const hits = [...p.querySelectorAll(".q"+it.ev)];
+  if (it.gap) hits.push(...p.querySelectorAll(`.tgap[data-g="${it.gap}"] .gf`));
+  hits.forEach(e => e.classList.add("ev","on"));
+  if (!hits.length) return;
+  const first = hits.sort((a,b)=>a.getBoundingClientRect().top-b.getBoundingClientRect().top)[0];
+  const scrollable = p.scrollHeight > p.clientHeight + 4;
+  if (scrollable) {
+    const pr = p.getBoundingClientRect(), fr = first.getBoundingClientRect();
+    if (fr.top < pr.top || fr.bottom > pr.bottom) p.scrollTop += fr.top - pr.top - 60;
+  } else if (scroll) first.scrollIntoView({behavior:"smooth", block:"center"});
+}
+function check(it, el) {
+  const v = getVal(it, el);
+  const rec = {v, ok: !!mark(it, v)};
+  S.ans[it.id] = rec; save();
+  lockItem(it, el, rec);
+  if (it.sec!=="lang") highlight(it, false);
+  updateScores();
+}
+function secScore(sec) {
+  const its = ITEMS.filter(i=>i.sec===sec);
+  return {got: its.filter(i=>S.ans[i.id]?.ok).length, done: its.filter(i=>S.ans[i.id]).length, max: its.length};
+}
+function updateScores() {
+  SECTIONS.forEach(s => { const r = secScore(s.id); const el = $("#ps-"+s.id); if (el) el.textContent = `Score ${r.got} / ${r.max} · checked ${r.done} / ${r.max}`; });
+  document.querySelectorAll(".steps button").forEach(b => {
+    const sec = SECTIONS.find(s=>s.id===b.dataset.nav); if (!sec) return;
+    const r = secScore(sec.id); b.classList.toggle("complete", r.done===r.max);
+  });
+}
+
+function show(p) {
+  if (p!=="start" && !S.name) p = "start";
+  page = p;
+  document.querySelectorAll(".page").forEach(x => x.classList.toggle("active", x.id==="pg-"+p));
+  document.querySelectorAll(".steps button").forEach(b => b.classList.toggle("active", b.dataset.nav===p));
+  if (p==="report") renderReport();
+  window.scrollTo(0,0);
+}
+
+/* ================= REPORT ================= */
+const SHORT = {t1:"Task 1 · Matching", t2:"Task 2 · Gapped text", t3:"Task 3 · Long text", lang:"Language"};
+const TIPS = {
+  t1:"Matching: the questions use different words from the text, so look for paraphrases, and check the other texts for distractors.",
+  t2:"Gapped text: look for linking words before and after each gap – this, it, them, however, also.",
+  t3:"Long text: find the right paragraph first, then check that every part of your answer is supported by the text.",
+  lang:"Language: review Units 1–4 grammar – participle clauses, passives, wish, unless, relative clauses and reflexive pronouns."
+};
+function reportData() {
+  const secs = SECTIONS.map(s => ({...s, ...secScore(s.id)}));
+  const got = secs.reduce((a,s)=>a+s.got,0), max = secs.reduce((a,s)=>a+s.max,0), done = secs.reduce((a,s)=>a+s.done,0);
+  if (!S.end && done===ITEMS.length) { S.end = Date.now(); save(); }
+  const mins = Math.max(1, Math.round(((S.end||Date.now()) - S.start)/60000));
+  const weakest = secs.slice().sort((a,b)=> a.got/a.max - b.got/b.max)[0];
+  const pct = Math.round(got/max*100);
+  const tip = pct >= 85 ? "Excellent work! Challenge: explain to a partner why each wrong option is wrong." : TIPS[weakest.id];
+  return {secs, got, max, done, mins, pct, tip};
+}
+function renderReport() {
+  const R = reportData();
+  const d = new Date();
+  const when = d.toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}) + " " + d.toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"});
+  const band = R.pct>=85?"b4":R.pct>=70?"b3":R.pct>=50?"b2":"b1";
+  const grid = SECTIONS.map(s => `<div class="rg"><div class="rgl">${s.name}</div><div class="rgc">${ITEMS.filter(i=>i.sec===s.id).map(i=>{const a=S.ans[i.id]; return `<span class="dot ${a?(a.ok?"ok":"no"):"na"}">${i.n}</span>`;}).join("")}</div></div>`).join("");
+  $("#pg-report").innerHTML = `
+   <div class="rcard" id="rcard">
+     <div class="rtop"><div><div class="rtitle">Practice Set 2 · Reading Focus</div><div class="rname">${esc(S.name)}${S.cls?` · ${esc(S.cls)}`:""}</div></div><div class="rdate">${when}</div></div>
+     <div class="rscore ${band}"><div class="big">${R.got}<span>/${R.max}</span></div><div class="pct">${R.pct}%</div></div>
+     ${R.secs.map(s=>`<div class="rbar"><div class="rbl">${SHORT[s.id]}</div><div class="rbt"><div class="rbf" style="width:${s.got/s.max*100}%"></div></div><div class="rbn">${s.got}/${s.max}</div></div>`).join("")}
+     <div class="rgrid">${grid}</div>
+     <div class="rleg"><span class="dot ok">✓</span> correct <span class="dot no">✗</span> wrong <span class="dot na">–</span> not answered</div>
+     <div class="rtip"><b>Next step:</b> ${R.tip}</div>
+     <div class="rfoot">${R.done}/${ITEMS.length} questions answered · ${R.mins} min</div>
+   </div>
+   <div class="rbtns">
+     ${R.done<ITEMS.length?`<p class="warn">You have ${ITEMS.length-R.done} question(s) not answered yet. You can go back and finish them, or send this report now.</p>`:""}
+     <p class="howto"><b>Screenshot the card above</b> and paste it into Google Chat for your teacher.<br>Windows: <kbd>Win</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd> · Mac: <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>4</kbd> · Chromebook: <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Show windows</kbd></p>
+     <button class="btn" id="copy">Copy text summary</button>
+     <button class="btn ghost" id="again">Start again</button>
+     <span id="copied"></span>
+   </div>`;
+  $("#copy").onclick = () => {
+    const t = [`Practice Set 2 – Reading Focus`, `Name: ${S.name}${S.cls?` (${S.cls})`:""}`, `Score: ${R.got}/${R.max} (${R.pct}%)`,
+      ...R.secs.map(s=>`${SHORT[s.id]}: ${s.got}/${s.max}`), `Answered: ${R.done}/${ITEMS.length} · Time: ${R.mins} min · ${when}`].join("\n");
+    const done = () => { $("#copied").textContent = "Copied! Paste it into Google Chat."; };
+    if (navigator.clipboard?.writeText) navigator.clipboard.writeText(t).then(done, () => fallbackCopy(t, done)); else fallbackCopy(t, done);
+  };
+  $("#again").onclick = () => { if (confirm("Start again? Your answers will be cleared.")) { try{localStorage.removeItem(SKEY);}catch(e){} location.reload(); } };
+}
+function fallbackCopy(t, done) { const ta = document.createElement("textarea"); ta.value = t; document.body.appendChild(ta); ta.select(); try { document.execCommand("copy"); done(); } catch(e){} ta.remove(); }
+
+/* ================= WIRING ================= */
+build();
+const itemById = id => ITEMS.find(i=>i.id===id);
+document.addEventListener("click", e => {
+  const t = e.target;
+  const nav = t.closest("[data-nav]"); if (nav && nav.dataset.nav) { show(nav.dataset.nav); return; }
+  const el = t.closest(".item"); if (!el) return;
+  const it = itemById(el.dataset.id);
+  if (el.classList.contains("done")) { if (t.closest(".showtext")) highlight(it, true); return; }
+  const pick = t.closest(".ch, .op, .tok");
+  if (pick) { el.querySelectorAll("."+pick.classList[0]).forEach(b=>b.classList.remove("sel")); pick.classList.add("sel"); ready(it, el); if (pick.classList.contains("tok")) el.querySelector(".fix").focus(); return; }
+  if (t.closest(".check")) check(it, el);
+});
+document.addEventListener("input", e => { const el = e.target.closest(".item"); if (el && !el.classList.contains("done")) ready(itemById(el.dataset.id), el); });
+document.addEventListener("keydown", e => {
+  if (e.key==="Enter" && e.target.matches(".tx")) { const el = e.target.closest(".item"); const b = el.querySelector(".check"); if (!b.disabled) b.click(); }
+});
+$("#go").onclick = () => {
+  const n = $("#nm").value.trim(); if (!n) { $("#nm").focus(); $("#nm").classList.add("need"); return; }
+  S = {name:n, cls:$("#cl").value.trim(), start:Date.now(), end:null, ans:{}}; save(); show("t1");
+};
+const prev = load();
+if (prev && prev.name && Object.keys(prev.ans).length) {
+  $("#resume").innerHTML = `<button class="btn ghost" id="res">Continue as ${esc(prev.name)} (${Object.keys(prev.ans).length} answered)</button>`;
+  $("#res").onclick = () => { S = prev; ITEMS.forEach(it => { const r = S.ans[it.id]; if (r) lockItem(it, document.getElementById(it.id), r); }); updateScores(); show("t1"); };
+}
+updateScores(); show("start");
+
+</script>
+</body>
+</html>
